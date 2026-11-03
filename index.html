@@ -67,7 +67,7 @@ html, body { margin: 0; height: 100%; background: transparent; font: 16px/1.5 -a
       } else {
         const types = purpose === "image" ? "image/png,image/jpeg,image/webp"
           : purpose === "open" ? "application/vnd.inkly.document,application/x-inkly"
-          : "application/pdf,application/vnd.google-apps.document,application/vnd.google-apps.presentation,application/vnd.inkly.document,application/x-inkly,application/json";
+          : "application/pdf,application/vnd.google-apps.document,application/vnd.google-apps.presentation,application/vnd.inkly.document,application/x-inkly";
         title = purpose === "image" ? "Insert an image from Google Drive" : purpose === "open" ? "Open an Inkly file from Google Drive" : "Add pages from Google Drive";
         // Images and PDFs show as thumbnails; Inkly files as a list.
         const docs = mode => {
