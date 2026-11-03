@@ -75,16 +75,9 @@ html, body { margin: 0; height: 100%; background: transparent; font: 16px/1.5 -a
           return mode && p.DocsViewMode?.[mode] ? view.setMode(p.DocsViewMode[mode]) : view;
         };
         const mode = purpose === "open" ? "LIST" : "GRID";
-        const notebooks = () => {
-          const view = new p.DocsView(p.ViewId.DOCS).setMimeTypes("application/x-smarttech-notebook,application/vnd.smart.notebook,application/octet-stream,application/zip,application/x-zip-compressed").setIncludeFolders(false);
-          if (typeof view.setQuery === "function") view.setQuery(".notebook");
-          return p.DocsViewMode?.LIST ? view.setMode(p.DocsViewMode.LIST) : view;
-        };
         views = [
           ...(purpose === "open" && /^[A-Za-z0-9_-]{10,200}$/.test(config.folderId || "") ? [label(docs("LIST").setIncludeFolders(true).setParent(config.folderId), "Inkly Files")] : []),
           label(docs(mode), "Recent"),
-          // D6.38: SMART Notebook files (Drive doesn't know their type: found by name).
-          ...(purpose === "pages" || purpose === "open" ? [label(notebooks(), "SMART Notebook")] : []),
           label(docs(mode).setIncludeFolders(true).setParent("root"), "My Drive"),
           label(docs(mode).setOwnedByMe(false), "Shared with me"),
           label(docs(mode).setIncludeFolders(true).setEnableDrives(true), "Shared drives"),
@@ -95,7 +88,9 @@ html, body { margin: 0; height: 100%; background: transparent; font: 16px/1.5 -a
         .setTitle(title)
         .setOAuthToken(config.token)
         .setDeveloperKey(config.apiKey)
-        .setOrigin(window.location.origin)
+        // D6.38: Google's picker now checks this against the top page, the Inkly
+        // Document (chrome-extension://...): otherwise "Incorrect origin value" and a blank picker.
+        .setOrigin(window.location.ancestorOrigins?.length ? window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1] : (typeof parentOrigin === "string" && parentOrigin ? parentOrigin : window.location.origin))
         .enableFeature(p.Feature.SUPPORT_DRIVES)
         .setCallback(data => {
           const action = data?.[p.Response.ACTION];
